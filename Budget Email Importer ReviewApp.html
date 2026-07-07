@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --border: #dbe4ee;
+      --text: #172033;
+      --muted: #64748b;
+      --soft: #94a3b8;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #16a34a;
+      --success-dark: #15803d;
+      --learn: #f59e0b;
+      --learn-dark: #d97706;
+      --skip: #e8eef5;
+      --skip-dark: #dbe5ef;
+      --danger: #ef4444;
+      --chip: #eef2f7;
+      --chip-ai: #e0f2fe;
+      --chip-review: #fff7e6;
+      --radius: 20px;
+      --radius-sm: 14px;
+      --shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 2px 8px rgba(15, 23, 42, 0.06);
+      --tap: 48px;
+      --content-max: 1500px;
+    }
+
+    * {
+      box-sizing: border-box;
+      min-width: 0;
+    }
+
+    html {
+      width: 100%;
+      min-height: 100%;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding-bottom: calc(22px + env(safe-area-inset-bottom));
+    }
+
+    button,
+    select,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button,
+    select {
+      max-width: 100%;
+    }
+
+    .app {
+      width: 100%;
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding-top: max(0px, env(safe-area-inset-top));
+      margin-bottom: 14px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(219, 228, 238, 0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      color: #ffffff;
+      font-size: 22px;
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.24);
+      flex: 0 0 auto;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 850;
+      letter-spacing: -0.03em;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    .summary-pill {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 0 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .summary-pill.saving {
+      color: #075985;
+      background: #e0f2fe;
+      border-color: rgba(2, 132, 199, 0.18);
+    }
+
+    .refresh-btn {
+      min-height: var(--tap);
+      border: 0;
+      border-radius: 999px;
+      padding: 0 16px;
+      background: var(--primary);
+      color: white;
+      font-weight: 850;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(37, 99, 235, 0.22);
+      white-space: nowrap;
+    }
+
+    .refresh-btn:hover:not(:disabled) {
+      background: var(--primary-dark);
+    }
+
+    .status {
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .status.error {
+      color: #b91c1c;
+      background: #fff4f4;
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-items: start;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    .card.removing {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+
+    .card-body {
+      padding: 16px;
+    }
+
+    .card-head {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .merchant-wrap {
+      flex: 1 1 auto;
+    }
+
+    .merchant {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 850;
+      letter-spacing: -0.03em;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .date {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    .amount-wrap {
+      text-align: right;
+      flex: 0 0 auto;
+      min-width: 94px;
+    }
+
+    .amount-label {
+      margin-bottom: 4px;
+      color: var(--soft);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 850;
+    }
+
+    .amount {
+      font-size: 27px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 100%;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.15;
+      background: var(--chip);
+      color: var(--text);
+      border: 1px solid rgba(100, 116, 139, 0.15);
+      overflow-wrap: anywhere;
+    }
+
+    .chip.ai {
+      background: var(--chip-ai);
+      color: #075985;
+      border-color: rgba(2, 132, 199, 0.18);
+    }
+
+    .chip.review {
+      background: var(--chip-review);
+      color: #92400e;
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .reason {
+      margin-top: 14px;
+      padding: 12px 13px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+    }
+
+    .reason-title {
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .reason-text {
+      margin: 0;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .card-footer {
+      display: grid;
+      gap: 12px;
+      padding: 14px 16px 16px;
+      border-top: 1px solid var(--border);
+      background: #fbfcfe;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    select {
+      width: 100%;
+      min-height: var(--tap);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: white;
+      color: var(--text);
+      font-size: 16px;
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .action {
+      min-height: var(--tap);
+      width: 100%;
+      border: 0;
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 14px;
+      line-height: 1.15;
+      font-weight: 850;
+      cursor: pointer;
+      white-space: normal;
+      text-align: center;
+    }
+
+    .action:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    button:disabled,
+    select:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .approve {
+      background: var(--success);
+      color: white;
+    }
+
+    .approve:hover:not(:disabled) {
+      background: var(--success-dark);
+    }
+
+    .approve-ai {
+      background: var(--primary);
+      color: white;
+    }
+
+    .approve-ai:hover:not(:disabled) {
+      background: var(--primary-dark);
+    }
+
+    .learn {
+      background: var(--learn);
+      color: white;
+    }
+
+    .learn:hover:not(:disabled) {
+      background: var(--learn-dark);
+    }
+
+    .skip {
+      background: var(--skip);
+      color: #475569;
+    }
+
+    .skip:hover:not(:disabled) {
+      background: var(--skip-dark);
+    }
+
+    .empty {
+      padding: 44px 20px;
+      text-align: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      color: var(--muted);
+    }
+
+    .empty-icon {
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: #dcfce7;
+      color: #15803d;
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    .empty h2 {
+      margin: 0 0 6px;
+      color: var(--text);
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .empty p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    @media (min-width: 860px) {
+      .app {
+        padding: 18px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+    }
+
+    @media (min-width: 1320px) {
+      .grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media screen and (max-width: 720px) {
+      html,
+      body {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+      }
+
+      .app,
+      .topbar,
+      .topbar-inner,
+      .grid,
+      .card,
+      .card-body,
+      .card-footer,
+      .actions {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow-x: hidden !important;
+      }
+
+      .app {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+      }
+
+      .topbar {
+        margin-bottom: 12px;
+      }
+
+      .topbar-inner {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        padding: 12px;
+      }
+
+      .brand {
+        width: 100% !important;
+        align-items: center;
+      }
+
+      .brand-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        font-size: 20px;
+      }
+
+      .brand h1 {
+        font-size: 22px;
+      }
+
+      .brand p {
+        font-size: 13px;
+      }
+
+      .topbar-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .summary-pill,
+      .refresh-btn {
+        width: 100%;
+      }
+
+      .grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+
+      .card-body {
+        padding: 15px;
+      }
+
+      .card-head {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .amount-wrap {
+        width: 100%;
+        text-align: left;
+        min-width: 0;
+      }
+
+      .amount {
+        font-size: 28px;
+      }
+
+      .card-footer {
+        padding: 14px 15px 15px;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      .action {
+        min-height: 50px;
+        font-size: 15px;
+      }
+
+      .brand h1,
+      .brand p,
+      .merchant,
+      .chip,
+      .reason-text {
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-icon" aria-hidden="true">💳</div>
+          <div>
+            <h1>Budget Review</h1>
+            <p>Tap quickly. Changes save in small batches.</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div id="summary" class="summary-pill">Loading…</div>
+          <button id="refreshBtn" class="refresh-btn" onclick="loadItems()">Refresh</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="status" class="status" aria-live="polite">Loading transactions…</div>
+    <div id="items" class="grid"></div>
+  </div>
+
+  <script>
+    let categories = [];
+    let busyLoading = false;
+    let actionQueue = [];
+    let flushTimer = null;
+    let flushInFlight = false;
+    let inFlightCount = 0;
+    let visibleCount = 0;
+
+    function setStatus(message, isError = false) {
+      const el = document.getElementById("status");
+      el.textContent = message;
+      el.className = isError ? "status error" : "status";
+    }
+
+    function setSummary(message, saving = false) {
+      const el = document.getElementById("summary");
+      if (!el) return;
+      el.textContent = message;
+      el.className = saving ? "summary-pill saving" : "summary-pill";
+    }
+
+    function updateSummary() {
+      const savingCount = actionQueue.length + inFlightCount;
+      const saving = savingCount > 0 || flushInFlight;
+      const base = visibleCount === 1 ? "1 transaction" : `${visibleCount} transactions`;
+
+      if (saving) {
+        setSummary(`${base} · saving ${savingCount || "…"}`, true);
+      } else {
+        setSummary(base, false);
+      }
+    }
+
+    function currency(value) {
+      const num = Number(value || 0);
+      return num.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD"
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeItem(item) {
+      const category =
+        item.category ||
+        item.selectedCategory ||
+        item.selected_category ||
+        "Misc";
+
+      const aiSuggestion =
+        item.aiSuggestion ||
+        item.aiCategory ||
+        item.ai_category ||
+        "";
+
+      const needsReview =
+        typeof item.needsReview === "boolean"
+          ? item.needsReview
+          : true;
+
+      const aiAvailable =
+        typeof item.aiAvailable === "boolean"
+          ? item.aiAvailable
+          : Boolean(aiSuggestion && aiSuggestion !== "Misc");
+
+      return {
+        rowNumber: item.rowNumber,
+        duplicateKey: item.duplicateKey || "",
+        transactionDate: item.transactionDate || "",
+        merchant: item.merchant || "Unknown Merchant",
+        amount: Number(item.amount || 0),
+        category: category,
+        aiSuggestion: aiSuggestion,
+        aiReason: item.aiReason || "",
+        reviewReason: item.reviewReason || "",
+        needsReview: needsReview,
+        aiAvailable: aiAvailable
+      };
+    }
+
+    function categoryOptions(selected) {
+      return categories.map(cat => {
+        const isSelected = cat === selected ? "selected" : "";
+        return `<option value="${escapeHtml(cat)}" ${isSelected}>${escapeHtml(cat)}</option>`;
+      }).join("");
+    }
+
+    function loadItems() {
+      if (flushInFlight || actionQueue.length) {
+        flushActions(true);
+      }
+
+      busyLoading = true;
+      setSummary("Loading…", false);
+      setStatus("Loading transactions…");
+      document.getElementById("items").innerHTML = "";
+
+      google.script.run
+        .withSuccessHandler(data => {
+          categories = data.categories || [];
+          const items = (data.items || []).map(normalizeItem);
+          renderItems(items);
+          busyLoading = false;
+        })
+        .withFailureHandler(err => {
+          busyLoading = false;
+          visibleCount = 0;
+          updateSummary();
+          setStatus("Failed to load: " + err.message, true);
+        })
+        .getPendingReviewItems();
+    }
+
+    function renderItems(items) {
+      const container = document.getElementById("items");
+      visibleCount = items.length;
+      updateSummary();
+
+      if (!items.length) {
+        showEmpty();
+        return;
+      }
+
+      setStatus(`${items.length} transaction${items.length === 1 ? "" : "s"} waiting for review.`);
+
+      container.innerHTML = items.map(item => {
+        const selectId = `category-${item.rowNumber}`;
+        const aiText = item.aiSuggestion ? item.aiSuggestion : "No AI suggestion";
+        const reviewChip = item.needsReview
+          ? `<span class="chip review">Needs review</span>`
+          : "";
+
+        const reasonText = item.aiReason || item.reviewReason || "";
+        const aiDisabled = item.aiAvailable ? "" : "disabled";
+
+        return `
+          <article class="card" id="card-${item.rowNumber}" data-key="${escapeHtml(item.duplicateKey)}">
+            <div class="card-body">
+              <div class="card-head">
+                <div class="merchant-wrap">
+                  <h2 class="merchant">${escapeHtml(item.merchant)}</h2>
+                  <div class="date">${escapeHtml(item.transactionDate)}</div>
+                </div>
+
+                <div class="amount-wrap">
+                  <div class="amount-label">Amount</div>
+                  <div class="amount">${currency(item.amount)}</div>
+                </div>
+              </div>
+
+              <div class="chips">
+                <span class="chip">Current: ${escapeHtml(item.category)}</span>
+                <span class="chip ai">AI: ${escapeHtml(aiText)}</span>
+                ${reviewChip}
+              </div>
+
+              ${reasonText ? `
+                <div class="reason">
+                  <p class="reason-title">Reasoning</p>
+                  <p class="reason-text">${escapeHtml(reasonText)}</p>
+                </div>
+              ` : ""}
+            </div>
+
+            <div class="card-footer">
+              <div class="field">
+                <label for="${selectId}">Category</label>
+                <select id="${selectId}">
+                  ${categoryOptions(item.category)}
+                </select>
+              </div>
+
+              <div class="actions">
+                <button class="action approve" onclick="approveCurrent(${item.rowNumber})">
+                  Approve
+                </button>
+
+                <button class="action learn" onclick="approveCurrentLearn(${item.rowNumber})">
+                  Approve & Learn
+                </button>
+
+                <button class="action approve-ai" onclick="approveAi(${item.rowNumber}, '${escapeHtml(item.aiSuggestion)}')" ${aiDisabled}>
+                  Use AI
+                </button>
+
+                <button class="action learn" onclick="approveAiLearn(${item.rowNumber}, '${escapeHtml(item.aiSuggestion)}')" ${aiDisabled}>
+                  Use AI + Learn
+                </button>
+
+                <button class="action ignore" onclick="ignoreMerchant(${item.rowNumber})">
+                  Ignore Merchant
+                </button>
+
+                <button class="action skip" onclick="skipItem(${item.rowNumber})">
+                  Skip
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function showEmpty() {
+      const container = document.getElementById("items");
+      const saving = actionQueue.length > 0 || inFlightCount > 0 || flushInFlight;
+      setStatus(saving ? "All visible transactions reviewed. Saving remaining queued actions…" : "All caught up.");
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">✓</div>
+          <h2>No pending transactions</h2>
+          <p>${saving ? "Your last actions are still saving." : "Everything visible has been reviewed."}</p>
+        </div>
+      `;
+    }
+
+    function selectedCategory(rowNumber) {
+      const el = document.getElementById(`category-${rowNumber}`);
+      return el ? el.value : "Misc";
+    }
+
+    function cardDuplicateKey(rowNumber) {
+      const card = document.getElementById(`card-${rowNumber}`);
+      return card ? String(card.dataset.key || "").trim() : "";
+    }
+
+    function removeCardOptimistically(rowNumber, message) {
+      const card = document.getElementById(`card-${rowNumber}`);
+      if (card) {
+        card.classList.add("removing");
+        setTimeout(() => {
+          if (card.parentNode) card.parentNode.removeChild(card);
+        }, 120);
+      }
+
+      visibleCount = Math.max(0, visibleCount - 1);
+      updateSummary();
+
+      if (visibleCount > 0) {
+        setStatus(`${message} ${visibleCount} remaining.`);
+      } else {
+        showEmpty();
+      }
+    }
+
+    function queueReviewAction(action, rowNumber, message) {
+      if (busyLoading) return;
+
+      const duplicateKey = cardDuplicateKey(rowNumber);
+      if (!duplicateKey) {
+        setStatus("Could not queue action: missing duplicate key. Refresh and try again.", true);
+        return;
+      }
+
+      action.duplicateKey = duplicateKey;
+      actionQueue.push(action);
+
+      removeCardOptimistically(rowNumber, message);
+      scheduleFlush();
+    }
+
+    function scheduleFlush() {
+      updateSummary();
+      if (flushTimer) clearTimeout(flushTimer);
+      flushTimer = setTimeout(() => flushActions(false), 450);
+    }
+
+    function flushActions(force) {
+      if (flushTimer) {
+        clearTimeout(flushTimer);
+        flushTimer = null;
+      }
+
+      if (flushInFlight || actionQueue.length === 0) {
+        updateSummary();
+        return;
+      }
+
+      const batch = actionQueue.splice(0, actionQueue.length);
+      inFlightCount = batch.length;
+      flushInFlight = true;
+      updateSummary();
+
+      google.script.run
+        .withSuccessHandler(result => {
+          flushInFlight = false;
+          inFlightCount = 0;
+
+          const results = result && result.results ? result.results : [];
+          const failures = results.filter(item => !item.ok);
+
+          if (failures.length) {
+            setStatus(
+              "Some actions failed to save: " +
+              failures.map(item => item.message).join(" | ") +
+              ". Refresh to re-check pending items.",
+              true
+            );
+          } else if (visibleCount === 0) {
+            showEmpty();
+          } else {
+            setStatus(`${visibleCount} transaction${visibleCount === 1 ? "" : "s"} remaining.`);
+          }
+
+          updateSummary();
+
+          if (actionQueue.length) {
+            flushActions(false);
+          }
+        })
+        .withFailureHandler(err => {
+          flushInFlight = false;
+          inFlightCount = 0;
+          updateSummary();
+          setStatus(
+            "Save failed: " + err.message +
+            ". Your visible cards were removed, but the sheet may not have updated. Refresh to reconcile.",
+            true
+          );
+        })
+        .processReviewActions(batch);
+    }
+
+    function approveCurrent(rowNumber) {
+      queueReviewAction({
+        action: "approve-selected",
+        category: selectedCategory(rowNumber)
+      }, rowNumber, "Approved.");
+    }
+
+    function approveCurrentLearn(rowNumber) {
+      queueReviewAction({
+        action: "approve-selected-remember",
+        category: selectedCategory(rowNumber)
+      }, rowNumber, "Approved and learned.");
+    }
+
+    function approveAi(rowNumber, aiCategory) {
+      queueReviewAction({
+        action: "approve-ai",
+        aiCategory: aiCategory
+      }, rowNumber, "Approved AI suggestion.");
+    }
+
+    function approveAiLearn(rowNumber, aiCategory) {
+      queueReviewAction({
+        action: "approve-ai-remember",
+        aiCategory: aiCategory
+      }, rowNumber, "Approved AI suggestion and learned.");
+    }
+
+    function ignoreMerchant(rowNumber) {
+      const confirmed = confirm(
+        "Ignore this merchant going forward? Future matching transactions will be skipped automatically."
+      );
+      if (!confirmed) return;
+
+      queueReviewAction({
+        action: "ignore"
+      }, rowNumber, "Ignored merchant.");
+    }
+
+    function skipItem(rowNumber) {
+      queueReviewAction({
+        action: "skip"
+      }, rowNumber, "Skipped.");
+    }
+
+    window.addEventListener("beforeunload", () => {
+      if (actionQueue.length && !flushInFlight) {
+        flushActions(true);
+      }
+    });
+
+    loadItems();
+  </script>
+</body>
+</html>
